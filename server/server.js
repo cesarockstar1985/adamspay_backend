@@ -1,5 +1,4 @@
 const express = require('express');
-const socketIO = require('socket.io');
 const cors = require('cors');
 const http = require('http');
 
@@ -26,12 +25,8 @@ app.use(fileUpload({
 
 // Routes
 app.use('/auth', require('./routes/auth'))
-app.use('/salas', require('./routes/salas'))
+app.use('/pedidos', require('./routes/pedidos'))
 app.use('/user', require('./routes/usuarios'))
-
-// IO = esta es la comunicacion del backend
-module.exports.io = socketIO(server);
-require('./sockets/socket');
 
 server.listen(port, (err) => {
 
