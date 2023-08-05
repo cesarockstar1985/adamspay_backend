@@ -62,7 +62,7 @@ $(function() {
 
     $('.btn-comprar').on('click', async function(){
         const authenticated = localStorage.getItem('all_users')
-        const { email, id } = JSON.parse(authenticated)
+        const { email, id } = authenticated ? JSON.parse(authenticated) : null;
         if(!authenticated){
             let expanded = $('#navToggler').attr('aria-expanded')
             if(expanded == 'false'){
