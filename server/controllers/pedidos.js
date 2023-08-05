@@ -3,8 +3,9 @@ const axios = require('axios');
 const uuid = require('uuid');
 
 const { Pedido } = require('../models/pedido');
+const { Usuar } = require('../models/pedido');
 const { sendMail } = require('../utils/email');
-const res = require('express/lib/response');
+const { Usuario } = require('../models/usuario');
 
 const checkout = async ( req, res ) =>{
 
@@ -34,7 +35,7 @@ const checkout = async ( req, res ) =>{
         const response = await instance.post('debts', body)
 
         if(!response){
-            return res.status(404).json({
+            return res.status(400).json({
                 msg: 'Ocurrió un error inesperado. Inténtelo más tarde'
             })
         }
@@ -47,7 +48,7 @@ const checkout = async ( req, res ) =>{
         })
 
         if(!pedidoinsert){
-            return res.status(404).json({
+            return res.status(400).json({
                 msg: 'Ocurrió un error inesperado. Inténtelo más tarde'
             })
         }
@@ -77,10 +78,39 @@ const checkout = async ( req, res ) =>{
 
 }
 
-const confirmation = () => {
-    res.status(200).json({
-        msg: 'success'
-    })
+const confirmation = async ( req, res ) => {
+
+    const { doc_id } = req.query
+
+    const pedido = await Pedido.findOne({ where: { docId: doc_id } });
+
+    if(!pedido){
+        res.status(400).json({
+            msg: 'El pedido no existe'
+        })
+    }
+
+    pedido.estado = 'pagado'
+    const pedidoUpdate = await pedido.save()
+
+    if(!pedidoUpdate){
+        res.status(400).json({
+            msg: 'Error al actualizar el pedido'
+        })
+    }
+
+    const { userId, id } = pedido;
+
+    const { email } = await Usuario.findByPk(userId)
+
+    sendMail(
+        email,
+        `El pago por el pedido #${ id } ha sido procesado`,
+        'Pago procesado!'
+    )
+
+    res.writeHead(301, { Location: `${ process.env.BASE_URL }confirmation.html?doc_id=${ doc_id }` });
+    res.end();
 }
 
 const getAxiosConfig = async () => {

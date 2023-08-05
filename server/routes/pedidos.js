@@ -4,6 +4,6 @@ const { checkout, confirmation } = require('../controllers/pedidos')
 const router = Router()
 
 router.post('/checkout', checkout)
-router.post('/confirmation', confirmation)
+router.get('/confirmation', confirmation)
 
 module.exports = router
