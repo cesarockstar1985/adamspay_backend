@@ -1,45 +1,40 @@
-# Notes:
+# Notas:
 
-[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/cesarockstar1985/socket-chat/blob/main/README.md)
-[![es](https://img.shields.io/badge/lang-es-green.svg)](https://github.com/cesarockstar1985/socket-chat/blob/main/README.es.md)
+Sitio web Don Onofre con pasarela de pago AdamsPay
 
-This is a small chat made with socket io, express and nodeJS
-
-It has a user login to enter the chat.
-
-To rebuild the node modules you must execute the command:
+Para reconstruir los módulos de node node se debe ejecutar el comando: 
 
 ```
 npm install
 ```
 
-# Database
-Open a database manager and import the socketChat.sql file that's in Db dump folder.
+# Base de datos
+Abrir algun manejador de base de datos e importar el archivo socketChat.sql que se encuentra en el directorio Db dump.
 
-# User Credentials:
+# Credenciales de usuarios:
 
-- First User:
+- Primer Usuario:
 
     User: Cesar
 
     Pass: primerUsuario
 
-- Second User:
+- Segundo Usuario:
 
     User: Carlos
 
     Pass: segundoUsuario
     
     
-# Run the app
-To run the app go to project root folder and execute:
+# Ejecutar la app
+Para ejecutar el chat ir a la raíz del proyecto y ejecutar:
 
 ```
 npm start
 ```
 
-The server will run the application on port 3000:
+El servidor que corre la aplicación se encuentra en el puerto 3000:
 
-In a web browser go to localhost:3000
+En un navegador ingresar a localhost:3000
 
 
