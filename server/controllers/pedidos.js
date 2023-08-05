@@ -3,8 +3,8 @@ const axios = require('axios');
 const uuid = require('uuid');
 
 const { Pedido } = require('../models/pedido');
-const { JSON } = require('sequelize');
 const { sendMail } = require('../utils/email');
+const res = require('express/lib/response');
 
 const checkout = async ( req, res ) =>{
 
@@ -77,6 +77,12 @@ const checkout = async ( req, res ) =>{
 
 }
 
+const confirmation = () => {
+    res.status(200).json({
+        msg: 'success'
+    })
+}
+
 const getAxiosConfig = async () => {
     return {
         baseURL: process.env.ADAMSPAY_BASE_URL,
@@ -88,5 +94,6 @@ const getAxiosConfig = async () => {
 }
 
 module.exports = {
-    checkout
+    checkout,
+    confirmation
 }
