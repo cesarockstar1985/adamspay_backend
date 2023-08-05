@@ -9,6 +9,4 @@ const db = new Sequelize(
         port: process.env.MYSQLPORT,
 })
 
-console.log(db)
-
 module.exports = { db }
