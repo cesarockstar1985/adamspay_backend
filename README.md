@@ -2,14 +2,20 @@
 
 Sitio web Don Onofre con pasarela de pago AdamsPay
 
-Para reconstruir los módulos de node node se debe ejecutar el comando: 
+ingresar al directorio
+
+```
+cd adamspay_backend
+```
+
+Para reconstruir los módulos de node se debe ejecutar el comando: 
 
 ```
 npm install
 ```
 
 # Base de datos
-Abrir algun manejador de base de datos e importar el archivo socketChat.sql que se encuentra en el directorio Db dump.
+Abrir algun manejador de base de datos e importar el archivo socketChat.sql que se encuentra en el directorio db dump.
 
 # Credenciales de usuarios:
 
