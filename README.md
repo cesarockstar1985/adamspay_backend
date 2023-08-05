@@ -1,9 +1,12 @@
 # Notas:
 
-[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/cesarockstar1985/socket-chat/blob/main/README.md)
-[![es](https://img.shields.io/badge/lang-es-green.svg)](https://github.com/cesarockstar1985/socket-chat/blob/main/README.es.md)
+Sitio web Don Onofre con pasarela de pago AdamsPay
 
-Este es un pequeño chat hecho con socket io, express y nodeJS.
+ingresar al directorio
+
+```
+cd adamspay_backend
+```
 
 Cuenta con un login de usuario para ingresar al chat.
 
@@ -17,6 +20,8 @@ npm install
 Abrir algun manejador de base de datos e importar el archivo adamspay_backend.sql que se encuentra en el directorio Db dump.
 
 # Credenciales de usuarios:
+
+Se puede ingresar con los siguientes usuarios para hacer compras
 
 - Primer Usuario:
 
