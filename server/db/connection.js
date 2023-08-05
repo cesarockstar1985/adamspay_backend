@@ -5,6 +5,7 @@ const db = new Sequelize(
     process.env.MYSQLUSER,
     process.env.MYSQLPASSWORD,{
         host: process.env.MYSQLHOST,
+        dialect: 'mysql',
         port: process.env.MYSQLPORT,
 })
 
