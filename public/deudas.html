@@ -270,7 +270,11 @@
         $(document).ready(function() {
 
             const usuario = localStorage.getItem('all_users');
+            if(!usuario){
+                window.location = baseUrl;
+            }
             const { id } = JSON.parse(usuario);
+
 
             const body = { id }
 
