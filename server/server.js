@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const http = require('http');
+const bodyParser = require("body-parser");
 
 const path = require('path');
 const { dbConnection } = require('./config');
@@ -15,6 +16,11 @@ const port = process.env.PORT || 3000;
 dbConnection()
 
 // Middlewares
+app.use(bodyParser.json({
+    verify: (req, res, buf) => {
+      req.rawBody = buf
+    }
+  }));
 app.use( cors() )
 app.use( express.json() )
 app.use( express.static(publicPath) );

@@ -3,9 +3,9 @@ const axios = require('axios');
 const uuid = require('uuid');
 
 const { Pedido } = require('../models/pedido');
-const { Usuar } = require('../models/pedido');
 const { sendMail } = require('../utils/email');
 const { Usuario } = require('../models/usuario');
+const { hash } = require('bcryptjs');
 
 const checkout = async ( req, res ) =>{
 
@@ -82,20 +82,11 @@ const confirmation = async ( req, res ) => {
 
     const { doc_id } = req.query
 
-    const pedido = await Pedido.findOne({ where: { docId: doc_id } });
+    const pedido = await getPedido(doc_id, res);
 
     if(!pedido){
         res.status(400).json({
             msg: 'El pedido no existe'
-        })
-    }
-
-    pedido.estado = 'pagado'
-    const pedidoUpdate = await pedido.save()
-
-    if(!pedidoUpdate){
-        res.status(400).json({
-            msg: 'Error al actualizar el pedido'
         })
     }
 
@@ -109,8 +100,51 @@ const confirmation = async ( req, res ) => {
         'Pago procesado!'
     )
 
-    res.writeHead(301, { Location: `${ process.env.BASE_URL }confirmation.html?doc_id=${ doc_id }` });
+    res.writeHead(301, { Location: `${ process.env.BASE_URL }confirmation.html?doc_id=${ doc_id }&status=${ pedido.estado }` });
     res.end();
+}
+
+const adamsPayWebhook = async ( req, res ) => {
+
+    const { payStatus, docId, objStatus } = req.body.debt;
+
+    let pedido = await getPedido(docId, res);
+    pedido = await getEstado(pedido, payStatus, objStatus);
+
+    pedido.save();
+
+    res.status(200).json({
+        msg: 'Estado de pedido guardado'
+    })
+} 
+
+const deudas = async ( req, res ) => {
+
+    const { id } = req.body;
+    const deudas = await Pedido.findAll({ where: { userId: id } });
+
+    const axiosConfig = await getAxiosConfig()
+    const instance = axios.create(axiosConfig)
+
+    const debts = deudas.map(async (element) => {
+        let { docId } = element
+
+        try {
+            const response = await instance.get(`debts/${docId}`);
+            const { debt } = response.data;
+            return {
+                debt
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    })
+
+    const results = await Promise.all(debts);
+
+    res.status(200).json({
+        results
+    })
 }
 
 const getAxiosConfig = async () => {
@@ -123,7 +157,45 @@ const getAxiosConfig = async () => {
     }
 }
 
+const getPedido = async (docId, res) => {
+    const pedido = await Pedido.findOne({ where: { docId } });
+
+    if(!pedido){
+        return res.status(200).json({
+            msg: `No se encontro el pedido #${ docId }`
+        })
+    }
+
+    return pedido;
+}
+
+const getEstado = async (pedido, payStatus, status) => {
+
+    if(payStatus.status == 'paid'){
+        pedido.estado = 'pagado'
+    }else if(payStatus.status == 'pending'){
+        pedido.estado = 'pendiente';
+    }
+
+    switch (status) {
+        case 'canceled':
+            pedido.estado = 'cancelado'
+            break;
+        
+        case 'error':
+            pedido.estado = 'error'
+            break;
+    
+        default:
+            break;
+    }
+
+    return pedido
+}
+
 module.exports = {
     checkout,
-    confirmation
+    confirmation,
+    adamsPayWebhook,
+    deudas
 }

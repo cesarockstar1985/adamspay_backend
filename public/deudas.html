@@ -241,89 +241,22 @@
                     <div class="card">
                         <div class="text-left logo p-2 px-5"> <img src="https://img.icons8.com/color/48/000000/small-business.png" width="50">
                         </div>
-                        <div class="invoice px-5 pt-5 d-none" id="confirmationTable">
-                            <h5>Su pedido ha sido confirmado!</h5> <span>Nos estaremos poniendo en contacto contigo para
-                                la entrega de su pedido. </span>
-                            <div class="payment border-top mt-3 mb-3 border-bottom table-responsive">
-                                <table class="table table-borderless d-none">
-                                    <tbody>
-                                        <tr>
-                                            <td>
-                                                <div class="py-2"> <span class="d-block text-muted">Fecha de pedido</span>
-                                                    <span>6 Agosto,2023</span> </div>
-                                            </td>
-                                            <td>
-                                                <div class="py-2"> <span class="d-block text-muted"># Pedido</span>
-                                                    <span id="pedidoId"></span> </div>
-                                            </td>
-                                            <td>
-                                                <div class="py-2"> <span class="d-block text-muted">Dirección de envío</span> <span>Avenida Conigliaro 456, Lambaré,Paraguay</span> </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="product border-bottom table-responsive">
-                                <table class="table table-borderless">
-                                    <tbody>
-                                        <tr>
-                                            <td width="60%"> <span class="font-weight-bold" id="pedidoNombre"></span>
-                                                <div class="product-qty"> <span class="d-block">Cantidad:1</span> </div>
-                                            </td>
-                                            <td width="20%">
-                                                <div class="text-right"> <span class="pedidoPrecio font-weight-bold"></span>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="row d-flex justify-content-end">
-                                <div class="col-md-5">
-                                    <table class="table table-borderless">
-                                        <tbody class="totals">
-                                            <tr>
-                                                <td>
-                                                    <div class="text-left"> <span class="text-muted">Subtotal</span>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <div class="text-right pedidoPrecio"> <span>$168.50</span> </div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <div class="text-left"> <span class="text-muted">Descuento</span>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <div class="text-right"> <span class="text-success">0</span>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <tr class="border-top border-bottom">
-                                                <td>
-                                                    <div class="text-left"> <span
-                                                            class="font-weight-bold">Subtotal</span> </div>
-                                                </td>
-                                                <td>
-                                                    <div class="text-right"> <span
-                                                            class="font-weight-bold pedidoPrecio">$238.50</span> </div>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                          <table class="table">
+                            <thead class="thead-light">
+                              <tr class="d-none" id="headerTable">
+                                <th scope="col">#</th>
+                                <th scope="col">Producto</th>
+                                <th scope="col">Moneda</th>
+                                <th scope="col">Moneda</th>
+                              </tr>
+                            </thead>
+                            <tbody id="debtTableBody">
+                                <div class="d-flex justify-content-center mt-3">
+                                    <div class="spinner-border" role="status" id="spinner"></div>
                                 </div>
-                        </div>
-                        <p>Para ver tu pago puedes hacerlo haciendo click</p>
+                            </tbody>
+                          </table>
                     </div>
-                    <div id="pendingPayment" class="d-none invoice p-5">
-                        <h5>UPS...</h5>
-                        <span>Algo ha ocurrido con su pago.</span>
-                        <p>Se registró el pedido pero el pago sigue pendiente.</p>
-                        <p>Se desea reintentarlo haga click</p>
-                    </div>
-                    <a href="" class="btn btn-primary mt-2 d-none" type="button" id="retryPayment">Aquí</a>
                 </div>
             </div>
         </div>
@@ -332,41 +265,51 @@
     <script src="./js/jquery.min.js"></script>
     <script src="./assets/dist/js/bootstrap.bundle.min.js"></script>
     <script src="./js/index.js"></script>
+    <script> const baseUrl = 'http://localhost:3000'; </script>
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
 
-            const queryString = window.location.search;
-            const params = new URLSearchParams(queryString);
-            const docIdParam = params.get('doc_id');
-            const status = params.get('status');
-            
-            let pedidoLocal = localStorage.getItem('pedido');
-            pedidoLocal = JSON.parse(pedidoLocal);
+            const usuario = localStorage.getItem('all_users');
+            const { id } = JSON.parse(usuario);
 
-            const { docId, amount, label, payUrl } = pedidoLocal
-            const { value } = amount
+            const body = { id }
 
-            if(docIdParam != docId){
-                return;
-            }
+            $.ajax({
+                url: baseUrl + '/pedidos/deudas',
+                method: 'POST',
+                beforeSend: function(xhr) {
+                    $('#spinner').removeClass('d-none')
+                },
+                contentType: 'application/json',
+                data: JSON.stringify(body),
+                success: function(response) {
+                    $('#spinner').addClass('d-none')
+                    $('#headerTable').removeClass('d-none')
 
-            if(pedidoLocal){
+                    const { results } = response;
+                    
+                    let elem = '';
 
-                $('#retryPayment').attr('href', payUrl);
-                $('#retryPayment').removeClass('d-none')
+                    $.each(results, function(index, value) {
+                        const { debt } = value;
+                        const { docId, label, amount } = debt
+                        const formatAmount = amount.value.replace(/\..*/, '')
+                        console.log(debt)
+                        elem += 
+                        `<tr>
+                            <td>${ docId }</th>
+                            <td>${ label }</td>
+                            <td>${ formatAmount }</td>
+                            <td>${ amount.currency }</td>
+                        </tr>`;
+                    });
 
-                if (status == 'pagado') {
-                    $('#confirmationTable').removeClass('d-none')
-                    $('#pedidoId').text(docId)
-                    $('#pedidoNombre').text(label)
-                    $('.pedidoPrecio').text(`Gs. ${value}`)
+                    $('#debtTableBody').html(elem)
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error('Error:', textStatus, errorThrown);
                 }
-    
-                if(status == 'pendiente'){
-                    $('#pendingPayment').removeClass('d-none')
-                }
-            }
-
+            });
         })
     </script>
 </body>
