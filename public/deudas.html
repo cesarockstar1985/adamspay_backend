@@ -246,7 +246,8 @@
                               <tr class="d-none" id="headerTable">
                                 <th scope="col">#</th>
                                 <th scope="col">Producto</th>
-                                <th scope="col">Moneda</th>
+                                <th scope="col">Estado</th>
+                                <th scope="col">Monto</th>
                                 <th scope="col">Moneda</th>
                               </tr>
                             </thead>
@@ -296,13 +297,15 @@
 
                     $.each(results, function(index, value) {
                         const { debt } = value;
-                        const { docId, label, amount } = debt
+                        const { docId, label, amount, payStatus } = debt
+                        const { status } = payStatus
                         const formatAmount = amount.value.replace(/\..*/, '')
-                        console.log(debt)
+                        // console.log(debt)
                         elem += 
                         `<tr>
                             <td>${ docId }</th>
                             <td>${ label }</td>
+                            <td>${ status == 'paid' ? 'pagado' : 'pendiente' }</td>
                             <td>${ formatAmount }</td>
                             <td>${ amount.currency }</td>
                         </tr>`;
