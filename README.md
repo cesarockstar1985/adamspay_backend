@@ -8,7 +8,7 @@ ingresar al directorio
 cd adamspay_backend
 ```
 
-Cuenta con un login de usuario para ingresar al chat.
+Cuenta con un login de usuario para realizar las compras.
 
 Para reconstruir los módulos de node node se debe ejecutar el comando: 
 
